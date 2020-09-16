@@ -30,13 +30,13 @@ RUN apk --update --no-cache add -t build-dependencies \
     pcre-dev \
     perl-dev \
     zlib-dev \
-  && mkdir -p /usr/src /var/lib/nginx/body /var/lib/nginx/fastcgi \
-  && cd /usr/src \
-  && wget http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz \
+  && mkdir -p /usr/src /var/lib/nginx/body /var/lib/nginx/fastcgi 
+WORKDIR /usr/src 
+RUN  wget http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz \
   && tar zxvf nginx-$NGINX_VERSION.tar.gz \
-  && git clone -b master --single-branch https://github.com/leev/ngx_http_geoip2_module.git \
-  && cd nginx-$NGINX_VERSION \
-  && ./configure --with-compat --add-dynamic-module=../ngx_http_geoip2_module \
+  && git clone -b master --single-branch https://github.com/leev/ngx_http_geoip2_module.git 
+WORKDIR /usr/src/nginx-$NGINX_VERSION 
+RUN ./configure --with-compat --add-dynamic-module=../ngx_http_geoip2_module \
   && make modules \
   && cp objs/ngx_http_geoip2_module.so /etc/nginx/modules \
   && apk del build-dependencies \
@@ -85,9 +85,9 @@ ENV MATOMO_VERSION="3.14.1" \
 
 RUN apk --update --no-cache add -t build-dependencies \
     ca-certificates gnupg libressl tar \
-  && mkdir -p /var/www \
-  && cd /tmp \
-  && wget -q https://builds.matomo.org/piwik-${MATOMO_VERSION}.tar.gz \
+  && mkdir -p /var/www 
+WORKDIR /tmp 
+RUN wget -q https://builds.matomo.org/piwik-${MATOMO_VERSION}.tar.gz \
   && wget -q https://builds.matomo.org/piwik-${MATOMO_VERSION}.tar.gz.asc \
   && wget -q https://builds.matomo.org/signature.asc \
   && gpg --import signature.asc \
